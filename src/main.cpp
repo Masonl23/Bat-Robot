@@ -169,7 +169,6 @@ void setup()
     // tendons[i].Set_Duty_Cyle(50);
     tendons[i].Set_Direction(CW);
     tendons[i].Set_PID_Param(1.5, 0, 0.025);
-
     tendons[i].Set_Angle(270);
   }
 

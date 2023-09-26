@@ -129,6 +129,8 @@ void TendonController::set_PWM_Freq(uint16_t pwmValue)
     TCC_sync(m_pwm_channel);
 }
 
+
+// set PID parameters 
 void TendonController::Set_PID_Param(float kp, float ki, float kd)
 {
     m_kp = kp;
