@@ -101,13 +101,49 @@ int angle1[numAngles] = {90, 120, 100, 90, 120, 60};
 int angle2[numAngles] = {100, 95, 60, 90, 105, 80};
 int angIndex = 0;
 
+
+// move through positions
+void Move_Through_Positions()
+{
+  if (millis() - lastTime > 150)
+  {
+
+    Serial.print("\nTarget: ");
+    Serial.println(angle1[angIndex]);
+    Serial.print("Motor 1: ");
+    Serial.println(tendons[0].Get_Angle());
+    Serial.print("Motor 2: ");
+    Serial.println(tendons[1].Get_Angle());
+    Serial.print("Motor 3: ");
+    Serial.println(tendons[2].Get_Angle());
+    Serial.print("Motor 4: ");
+    Serial.println(tendons[3].Get_Angle());
+    Serial.print("Motor 5: ");
+    Serial.println(tendons[4].Get_Angle());
+    Serial.print("Motor 6: ");
+    Serial.println(tendons[5].Get_Angle());
+    angIndex++;
+    if (angIndex > numAngles)
+    {
+      angIndex = 0;
+    }
+    lastTime = millis();
+  }
+  tendons[0].Set_Angle(angle1[angIndex]);
+  tendons[1].Set_Angle(angle1[angIndex]);
+  tendons[2].Set_Angle(angle1[angIndex]);
+  tendons[3].Set_Angle(angle1[angIndex]);
+  tendons[4].Set_Angle(angle1[angIndex]);
+  tendons[5].Set_Angle(angle1[angIndex]);
+}
+
 void setup()
 {
   // start serial comm for debugging
   Serial.begin(9600);
-  while (!Serial)
-    ;
-  ;
+  // while (!Serial)
+  //   ;
+  // ;
   Serial.println("Starting");
 
   // start clocks
@@ -145,44 +181,12 @@ void setup()
 void loop()
 {
 
-  if (millis() - lastTime > 300)
-  {
+  // move through predefined positions
+  Move_Through_Positions();
 
-    // tendons[0].Toggle_Direction();
-    // tendons[1].Toggle_Direction();
-    // tendons[2].Toggle_Direction();
-    // tendons[3].Toggle_Direction();
-    // tendons[4].Toggle_Direction();
-    // tendons[5].Toggle_Direction();
-
-    Serial.print("\nTarget: ");
-    Serial.println(angle1[angIndex]);
-    Serial.print("Motor 1: ");
-    Serial.println(tendons[0].Get_Angle());
-    Serial.print("Motor 2: ");
-    Serial.println(tendons[1].Get_Angle());
-    Serial.print("Motor 3: ");
-    Serial.println(tendons[2].Get_Angle());
-    Serial.print("Motor 4: ");
-    Serial.println(tendons[3].Get_Angle());
-    Serial.print("Motor 5: ");
-    Serial.println(tendons[4].Get_Angle());
-    Serial.print("Motor 6: ");
-    Serial.println(tendons[5].Get_Angle());
-    angIndex++;
-    if (angIndex > numAngles)
-    {
-      angIndex = 0;
-    }
-    lastTime = millis();
-  }
-  tendons[0].Set_Angle(angle1[angIndex]);
-  tendons[1].Set_Angle(angle1[angIndex]);
-  tendons[2].Set_Angle(angle1[angIndex]);
-  tendons[3].Set_Angle(angle1[angIndex]);
-  tendons[4].Set_Angle(angle1[angIndex]);
-  tendons[5].Set_Angle(angle1[angIndex]);
 }
+
+
 
 /*
  * M0:
@@ -203,10 +207,6 @@ void loop()
  * M5:
  *      enca: D30 --> PA23 --> EXTINT[7]
  *      encb: D51 --> PD08 --> EXTINT[3]
- */
-
-/**
- * Callbacks for encoder interrupts
  */
 
 //  *      enca: D40 --> PC13 --> EXTINT[13]
