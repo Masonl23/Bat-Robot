@@ -96,7 +96,6 @@ unsigned long lastTime = 0;
 byte curState = 0;
 
 const int numAngles = 6;
-// int angles[numAngles] = {90, -90, 180, 360, 270, 45};
 int angle1[numAngles] = {90, 120, 100, 90, 120, 60};
 int angle2[numAngles] = {100, 95, 60, 90, 105, 80};
 int angIndex = 0;
@@ -141,9 +140,9 @@ void setup()
 {
   // start serial comm for debugging
   Serial.begin(9600);
-  // while (!Serial)
-  //   ;
-  // ;
+  while (!Serial)
+    ;
+  ;
   Serial.println("Starting");
 
   // start clocks
@@ -166,11 +165,13 @@ void setup()
   for (int i = 0; i < NUM_TENDONS; i++)
   {
     tendons[i].init_peripheral();
+    tendons[i].Set_Direction(OFF);
+    // tendons[i].Calibrate_Min_PWM();
     // tendons[i].Set_Duty_Cyle(50);
-    tendons[i].Set_Direction(CW);
-    tendons[i].Set_PID_Param(1.5, 0, 0.025);
-    tendons[i].Set_Angle(270);
+    tendons[i].Set_PID_Param(2, 0, 0.025);
+    // tendons[i].Set_Angle(270);
   }
+  // tendons[2].Calibrate_Min_PWM();
 
   // good measure why not start the TCC0 again..
   TCC_ENABLE(TCC0);

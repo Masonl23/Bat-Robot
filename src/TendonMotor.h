@@ -9,24 +9,6 @@
 
 #define ML_ENC_CPR (12)
 
-// #define ML_ENC_COUNT_TO_ANGLE(angle) ((360.0 * angle) / (ML_HPCB_LV_100P1 * ML_ENC_CPR))
-
-// typedef enum
-// {
-//     RISE, SETTLING, STEADY
-// } ml_pid_state;
-
-// typedef struct {
-//     // parames
-//     float     K_p, K_i, K_d;
-//     unsigned long prevTime;
-//     uint16_t  deadband_offset;
-
-//     float           integral;
-//     float           prev_error;
-
-//     ml_pid_state    state;
-// } ml_pid;
 
 // direction motor should turn
 typedef enum
@@ -123,7 +105,9 @@ private:
 
 
     // min PWM values for each motor
-    uint16_t m_min_PWM = 0;
+    uint16_t m_min_CW_PWM = 0;
+    uint16_t m_min_CCW_PWM = 0;
+    bool m_calibrated = false;
 
 
     // limits
@@ -137,5 +121,6 @@ private:
     // name of the current tendon controller
     String m_name = "";
 
+    // frequency of tcc channel
     uint32_t m_tcc_freq = 6000;
 };

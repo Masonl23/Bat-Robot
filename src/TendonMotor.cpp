@@ -129,8 +129,7 @@ void TendonController::set_PWM_Freq(uint16_t pwmValue)
     TCC_sync(m_pwm_channel);
 }
 
-
-// set PID parameters 
+// set PID parameters
 void TendonController::Set_PID_Param(float kp, float ki, float kd)
 {
     m_kp = kp;
@@ -174,11 +173,81 @@ void TendonController::Toggle_Direction()
 
 /**
  * Calibrates minimum PWM
-*/
-void TendonController::Calibrate_Min_PWM(){
+ */
+void TendonController::Calibrate_Min_PWM()
+{
 
+    int16_t lastTicks = m_currentTicks;
+
+    // find min value
+    uint16_t minPwm = 0;
+    uint16_t avgCWPwm = 0;
+    uint16_t timesSuccess = 0;
+    ulong lastRun = 0;
+    Set_Direction(CW);
+    for (int i = 0; i < 5; i++)
+    {
+        timesSuccess++;
+        while (lastTicks == m_currentTicks)
+        {
+            if (millis() - lastRun > 50)
+            {
+                minPwm += 50;
+                if (minPwm >= m_tcc_freq)
+                {
+                    timesSuccess--;
+                    break;
+                }
+                set_PWM_Freq(minPwm);
+                lastRun = millis();
+            }
+        }
+        lastTicks = m_currentTicks;
+        avgCWPwm += minPwm;
+        minPwm = 0;
+        set_PWM_Freq(0);
+    }
+    avgCWPwm /= timesSuccess;
+
+    set_PWM_Freq(0);
+    Set_Direction(CCW);
+    lastTicks = m_currentTicks;
+    minPwm = 0;
+    timesSuccess = 0;
+    uint16_t avgCCWPwm = 0;
+    for (int i = 0; i < 5; i++)
+    {
+        timesSuccess++;
+        while (lastTicks == m_currentTicks)
+        {
+            if (millis() - lastRun > 50)
+            {
+                minPwm += 100;
+                if (minPwm >= m_tcc_freq)
+                {
+                    timesSuccess--;
+                    break;
+                }
+                set_PWM_Freq(minPwm);
+                lastRun = millis();
+            }
+        }
+        lastTicks = m_currentTicks;
+        avgCCWPwm += minPwm;
+        minPwm = 0;
+        set_PWM_Freq(0);
+    }
+
+    avgCCWPwm /= timesSuccess;
+    Set_Direction(OFF);
+    Serial.print("Min pwmcw : ");
+    Serial.println(avgCWPwm);
+    Serial.print("Min pwmccw : ");
+    Serial.println(avgCCWPwm);
+    m_min_CW_PWM = avgCWPwm;
+    m_min_CCW_PWM = avgCCWPwm;
+    m_calibrated = true;
 }
-
 
 /**
  * Returns current angle of motor
@@ -215,17 +284,26 @@ void TendonController::Set_Angle(float destAngle)
     // set new pwm signal
     m_cur_pwm = (uint16_t)fabs(sig);
 
-    m_cur_pwm = mapf(m_cur_pwm, 0, 6000, 2500, 6000);
-    if (m_cur_pwm > m_tcc_freq)
-    {
-        m_cur_pwm = m_tcc_freq;
-    }
-
     // set direction
     m_direction = CW;
     if (sig < 0)
     {
         m_direction = CCW;
+    }
+
+    if (!m_calibrated)
+    {
+        m_cur_pwm = mapf(m_cur_pwm, 0, 6000, 2500, 6000);
+    }
+    else
+    {
+        uint16_t min = sig < 0 ? m_min_CCW_PWM : m_min_CW_PWM;
+        m_cur_pwm = mapf(m_cur_pwm, 0, 6000, min, 6000);
+    }
+
+    if (m_cur_pwm > m_tcc_freq)
+    {
+        m_cur_pwm = m_tcc_freq;
     }
 
     // Set_Duty_Cyle(m_cur_pwm);
