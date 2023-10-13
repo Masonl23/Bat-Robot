@@ -156,6 +156,10 @@ void TendonController::Set_Direction(Tendon_Direction dir)
     m_direction = dir;
 }
 
+/**
+ * Toggles the direction of the motor unless the system is off,
+ * then nothing occurs.
+*/
 void TendonController::Toggle_Direction()
 {
     switch (m_direction)
@@ -172,7 +176,7 @@ void TendonController::Toggle_Direction()
 }
 
 /**
- * Calibrates minimum PWM
+ * Calibrates minimum PWM - not working
  */
 void TendonController::Calibrate_Min_PWM()
 {
@@ -250,7 +254,7 @@ void TendonController::Calibrate_Min_PWM()
 }
 
 /**
- * Returns current angle of motor
+ * Returns current angle of motor using some maths.
  */
 float TendonController::Get_Angle()
 {
@@ -258,7 +262,7 @@ float TendonController::Get_Angle()
 }
 
 /**
- * Set target angle
+ * Set target angle, runs the PID algorithim
  */
 void TendonController::Set_Angle(float destAngle)
 {
